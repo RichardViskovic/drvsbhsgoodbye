@@ -5,61 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Tragic Departure of Dr. Viskovic</title>
     <style>
-        body {
-            font-family: 'Georgia', serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Georgia', serif;
             background-color: #1a1a1a;
             color: #d3d3d3;
-            text-align: center;
+            overflow: hidden;
+        }
+        .wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
         }
         .container {
             background-color: rgba(0, 0, 0, 0.7);
-            padding: 2rem;
+            padding: 1rem;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            z-index: 10;
+            max-width: 100%;
+            text-align: center;
         }
         h1 {
-            font-size: 2.5em;
+            font-size: clamp(1rem, 4vw, 2.5rem);
             margin-bottom: 0.5em;
             color: #ff6b6b;
             text-shadow: 2px 2px 4px #000000;
         }
         #countdown {
-            font-size: 3em;
-            margin: 1em 0;
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            margin: 0.5em 0;
             color: #4ecdc4;
             text-shadow: 0 0 10px #4ecdc4;
         }
-        .tear {
-            font-size: 5em;
-            margin: 0.2em 0;
-            animation: fall 2s infinite;
-        }
-        @keyframes fall {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(100px); opacity: 0; }
+        p {
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            margin: 0.5em 0;
         }
         .footer {
             font-style: italic;
-            margin-top: 2em;
-            font-size: 0.9em;
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
             color: #888;
+            margin-top: 1em;
+        }
+        .teardrop {
+            position: absolute;
+            opacity: 0.3;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>The Tragic Countdown to Dr. Viskovic's Departure</h1>
-        <div class="tear">💧</div>
-        <div id="countdown"></div>
-        <p>...until Shirley Boys' High School loses its brightest star</p>
-        <div class="footer">
-            This website is brought to you by the "We'll Miss You, Dr. V" Committee
+    <div class="wrapper">
+        <div class="container">
+            <h1>Dr. Viskovic's Tragic Departure</h1>
+            <div id="countdown"></div>
+            <p>...until Shirley Boys' High School loses its brightest star</p>
+            <div class="footer">
+                Brought to you by the "We'll Miss You, Dr. V" Committee
+            </div>
         </div>
     </div>
 
@@ -80,12 +95,49 @@
 
             if (timeLeft < 0) {
                 clearInterval(countdownTimer);
-                document.getElementById("countdown").innerHTML = "The unthinkable has happened. Dr. Viskovic has left the building.";
+                document.getElementById("countdown").innerHTML = "Dr. Viskovic has left the building.";
             }
         }
 
+        function createTeardrop() {
+            const teardrop = document.createElement('div');
+            teardrop.innerHTML = '💧';
+            teardrop.className = 'teardrop';
+            teardrop.style.left = Math.random() * 100 + 'vw';
+            teardrop.style.fontSize = `clamp(10px, ${Math.random() * 2 + 1}vw, 30px)`;
+            teardrop.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            document.body.appendChild(teardrop);
+
+            teardrop.addEventListener('animationiteration', () => {
+                teardrop.style.left = Math.random() * 100 + 'vw';
+            });
+        }
+
         const countdownTimer = setInterval(updateCountdown, 1000);
-        updateCountdown(); // Initial call to avoid delay
+        updateCountdown();
+
+        for (let i = 0; i < 20; i++) {
+            createTeardrop();
+        }
+
+        // Adjust number of teardrops based on screen size
+        function adjustTeardrops() {
+            const teardrops = document.querySelectorAll('.teardrop');
+            const desiredCount = Math.max(5, Math.floor(window.innerWidth * window.innerHeight / 20000));
+            
+            if (teardrops.length > desiredCount) {
+                for (let i = desiredCount; i < teardrops.length; i++) {
+                    teardrops[i].remove();
+                }
+            } else if (teardrops.length < desiredCount) {
+                for (let i = teardrops.length; i < desiredCount; i++) {
+                    createTeardrop();
+                }
+            }
+        }
+
+        window.addEventListener('resize', adjustTeardrops);
+        adjustTeardrops();
     </script>
 </body>
 </html>
